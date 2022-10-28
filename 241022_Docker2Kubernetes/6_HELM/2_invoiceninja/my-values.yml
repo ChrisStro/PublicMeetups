@@ -1,0 +1,20 @@
+debug: false
+
+userEmail: "admin@example.com"
+userPassword: "changeme!"
+
+appKey: "base64:JOhRbzcMHMcWldwffnF0CbSO4H3VwmHLG+CABn+Mnvg="
+persistence:
+  public:
+    accessModes:
+    - ReadWriteOnce
+    size: 1Gi
+redis:
+  auth:
+    password: '2Lkqkti/AS/fBGu5pF5ZXLGOEdrATtDM8dzSNM8kF4IN+K5B'
+mariadb:
+  auth:
+    rootPassword: 'EAaUbAfan2Yxg/dDw02BvVQySgg/W1ye3mlRPy10m4YapS0Y'
+    password: 'dtgegLFPfwKRRq+hd+lACA=='
+ingress:
+  enabled: false

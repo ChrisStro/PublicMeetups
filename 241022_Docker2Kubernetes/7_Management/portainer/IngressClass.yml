@@ -1,0 +1,9 @@
+# enable ingress class for traefik, needed if you want to assign ingress via portainer
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: traefik
+  annotations:
+    ingressclass.kubernetes.io/is-default-class: "true"
+spec:
+  controller: traefik.io/ingress-controller

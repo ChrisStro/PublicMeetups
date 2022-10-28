@@ -1,0 +1,101 @@
+version: '3'
+
+services:
+  traefik:
+    image: "traefik:latest"
+    container_name: "traefik"
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    ports:
+      - "80:80"
+      - "443:443"
+      # (Optional) Expose Dashboard
+      #- "8080:8080"  # Don't do this in production!
+    command:
+      # provider setup docker/file
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false" # Default is true
+      - "--providers.file.filename=/file_provider.yml" # Default is true
+      - "--providers.file.watch=true"
+      # Configure entrypoints
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # traefik server settings
+      - "--log.level=INFO" # level: debug, info, warning, error, critical
+      - "--global.checkNewVersion=true"
+      - "--global.sendAnonymousUsage=false"
+      - "--serversTransport.insecureSkipVerify=true" # when forwarding to selfsigned
+      # certificate resolver cloudflare
+      - "--certificatesResolvers.cf-staging.acme.email=your-email@x.x.x.x.sslip.io"
+      - "--certificatesResolvers.cf-staging.acme.storage=acme.json"
+      - "--certificatesResolvers.cf-staging.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory" # default is production
+      - "--certificatesResolvers.cf-staging.acme.dnsChallenge.provider=cloudflare"
+      - "--certificatesResolvers.cf-staging.acme.dnsChallenge.resolvers[0]=1.1.1.1:53"
+      - "--certificatesResolvers.cf-staging.acme.dnsChallenge.resolvers[1]=1.0.0.1:53"
+      - "--certificatesResolvers.cf-production.acme.email=your-email@x.x.x.x.sslip.io"
+      - "--certificatesResolvers.cf-production.acme.storage=acme.json"
+      - "--certificatesResolvers.cf-production.acme.dnsChallenge.provider=cloudflare"
+      - "--certificatesResolvers.cf-production.acme.dnsChallenge.resolvers[0]=1.1.1.1:53"
+      - "--certificatesResolvers.cf-production.acme.dnsChallenge.resolvers[1]=1.0.0.1:53"
+      # tls on endpoint and redirection
+      - "--entrypoints.websecure.http.tls=true"
+       #- "--entrypoints.websecure.http.tls.certResolver=cf-staging"
+      - "--entrypoints.websecure.http.tls.domains[0].main=home.x.x.x.x.sslip.io"
+      - "--entrypoints.websecure.http.tls.domains[0].sans=*.home.x.x.x.x.sslip.io"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      # enable dashboard
+      - "--api=true"
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+    # cloudflare stuff
+    environment:
+      - CF_API_EMAIL=me@x.x.x.x.sslip.io
+      - CF_DNS_API_TOKEN=myCloudFlareAPIKey
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./acme.json:/acme.json
+      - ./file_provider.yml:/file_provider.yml:ro
+    labels:
+      # middleware
+      # - "traefik.http.middlewares.traefik-auth.basicauth.users=USER:BASIC_AUTH_PASSWORD"
+      # - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
+      # https part
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-secure.service=api@internal"
+      - "traefik.http.routers.traefik-secure.entrypoints=websecure"
+      - "traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.x.x.x.x.sslip.io`)"
+      # - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+      # - "traefik.http.routers.traefik-secure.tls.certresolver=cf-staging"
+
+  unifi:
+    image: "jacobalberty/unifi:latest"
+    container_name: unifi
+    restart: unless-stopped
+    init: true
+    ports:
+      - "8080:8080" # device and application communication
+      - "8880:8880" # HTTP portal redirection
+      - "8443:8443" # HTTPS portal redirection
+      - "6789:6789" # UniFi mobile speed test
+      - "3478:3478/udp" # STUN
+      - "10001:10001/udp" # device discovery
+      - "1900:1900/udp" # "Make application discoverable on L2 network" in the UniFi Network settings
+    volumes:
+      - unifi:/unifi
+    networks:
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.unifi.rule=Host(`unifi.x.x.x.x.sslip.io`)"
+      - "traefik.http.services.unifi.loadbalancer.server.scheme=https"
+      - "traefik.http.services.unifi.loadbalancer.server.port=8443"
+
+volumes:
+  unifi:
+    external: true
+networks:
+  traefik_proxy:
+    external: true

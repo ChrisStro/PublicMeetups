@@ -1,0 +1,21 @@
+---
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: invoiceninja
+  namespace: my-invoiceninja
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  rules:
+  - host: invoiceninja.x.x.x.x.sslip.io
+    http:
+     paths:
+     - path: /
+       pathType: Prefix
+       backend:
+        service:
+         name: invoiceninja-web
+         port:
+          number: 8080
+  tls: []

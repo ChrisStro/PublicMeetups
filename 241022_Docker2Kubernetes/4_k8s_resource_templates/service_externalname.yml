@@ -1,0 +1,48 @@
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: outside-services
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: outside-svc # must match
+  namespace: outside-services
+spec:
+ type: ExternalName
+ externalName: vrdcb.x.x.x.x.sslip.io.local
+ports:
+  - 80
+
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: mysql-svc
+#   namespace: default
+#   labels:
+#     app: mysql
+# spec:
+#   type: ExternalName
+#   externalName: mysql-svc.my-mysql.svc.cluster.local
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: outside-ingressroute
+  namespace: outside-services
+spec:
+  entryPoints:
+    - websecure
+    - web
+  routes:
+  - match: Host(`outside.local.x.x.x.x.sslip.io`)
+    kind: Rule
+    services:
+    - name: outside-svc
+      port: 80
+  # tls:
+  #   secretName: traefik-san-local-cert

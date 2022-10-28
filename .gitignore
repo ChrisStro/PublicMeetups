@@ -1,0 +1,4 @@
+# exclude created files from OSDCloud
+/230622_LearnOSDCloud/OSD*
+/230622_LearnOSDCloud/Save_ISOs*
+/230622_LearnOSDCloud/*.psd1

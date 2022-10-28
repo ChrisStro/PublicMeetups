@@ -1,0 +1,26 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: netbox-ingress
+  namespace: my-netbox
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    cert-manager.io/cluster-issuer: selfsigned
+
+spec:
+  rules:
+  - host: netbox.x.x.x.x.sslip.io
+    http:
+      paths:
+      - backend:
+          service:
+            name: netbox
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - netbox.x.x.x.x.sslip.io
+    secretName: netbox-tls-cert

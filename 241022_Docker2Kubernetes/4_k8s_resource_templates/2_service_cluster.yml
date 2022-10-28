@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: first-service-cluster
+  namespace: template-test
+  # annotations:
+  #   kube-vip.io/ignore: "true"
+spec:
+  selector:
+    app: whoami-pod
+  ports:
+    - protocol: TCP
+      port: 880
+      targetPort: 880
+
+# via cli
+# kubectl expose deploy/traefik --port=880 --target-port=880 --name=first-service-cluster

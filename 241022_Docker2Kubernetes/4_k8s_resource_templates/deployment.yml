@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whoami-deployment
+  namespace: template-test
+  labels:
+    app: whoami
+spec:
+  selector:
+    matchLabels:
+      app: whoami
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: whoami
+    spec:
+      containers:
+      - name: whoami
+        image: traefik/whoami
+        ports:
+        - name: http
+          containerPort: 80
+
+# cli info
+# kubectl get deployments
+# kubectl rollout status deployment/whoami-deployment
+# kubectl get rs
+
+# cli update
+# kubectl set image deployment/nginx-deployment nginx=nginx:1.16.1
+# kubectl edit deployment/whoami-deployment
+
+# cli roll back
+# kubectl rollout history deployment/nginx-deployment
+# kubectl rollout history deployment/nginx-deployment --revision=2
+# kubectl rollout undo deployment/nginx-deployment # previous
+# kubectl rollout undo deployment/nginx-deployment --to-revision=2
+
+# cli scale
+# kubectl scale deployment/nginx-deployment --replicas=10
+
+# autoscaler
+# kubectl autoscale deployment/nginx-deployment --min=10 --max=15 --cpu-percent=80
+# https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/
+
+# cli pause/resume
+# kubectl rollout pause deployment/nginx-deployment
+# kubectl rollout resume deployment/nginx-deployment

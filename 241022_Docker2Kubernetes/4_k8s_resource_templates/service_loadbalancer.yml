@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: first-service-loadbalancer
+  namespace: template-test
+  # annotations:
+  #   kube-vip.io/ignore: "true"
+spec:
+  type: LoadBalancer
+  # LoadBalancerIP : 192.168.5.236
+  selector:
+    app: whoami
+  ports:
+    - protocol: TCP
+      port: 880
+      targetPort: 880

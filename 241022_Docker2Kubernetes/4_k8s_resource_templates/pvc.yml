@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mypvc
+spec:
+  # storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+#  k get pvc
+#  k get pv
+#  k get volume
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+spec:
+  containers:
+    - name: myfrontend
+      image: nginx
+      volumeMounts:
+        - name: mypd
+          mountPath: /var/www/html
+  volumes:
+    - name: mypd
+      persistentVolumeClaim:
+        claimName: mypvc
+# k get pod -o wide

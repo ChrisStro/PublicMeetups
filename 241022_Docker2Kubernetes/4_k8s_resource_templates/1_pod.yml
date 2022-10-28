@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: whoami-pod
+  namespace: template-test
+  labels:
+    app: whoami-pod
+spec:
+  containers:
+    - name: whoami
+      image: traefik/whoami
+      ports:
+        - containerPort: 80

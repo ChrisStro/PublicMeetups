@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+  # first one
+  bitwarden:
+    restart: always
+    image: vaultwarden/server:latest
+    ports:
+      - "80:80"
+    container_name: bitwarden
+    volumes:
+      - "vaultwarden_data:/data"
+    environment:
+      - ADMIN_TOKEN=WayToSimple
+    network_mode: bridge
+
+  # second one
+  universal:
+    container_name: psuniversal
+    ports:
+     - 5000:5000
+    image: ironmansoftware/universal:latest
+    volumes:
+      - psuniversal:/home/data
+    environment:
+     - Data__RepositoryPath=/home/data/Repository
+     - Data__ConnectionString=/home/data/database.db
+     - Data__UniversalDashboard__AssetsFolder=/home/data/UniversalDashboard
+     - Logging__Path=/home/data/UniversalDashboard
+     - TZ=Europe/Amsterdam
+    network_mode: host
+    restart: unless-stopped
+
+volumes:
+  vaultwarden_data:
+  psuniversal:

@@ -1,0 +1,13 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: vaultwarden-svc
+  namespace: my-vaultwarden
+spec:
+  selector:
+    app: vaultwarden
+  ports:
+    - protocol: TCP
+      port: 80
+      # targetPort: 5000
