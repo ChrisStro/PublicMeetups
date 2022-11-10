@@ -15,6 +15,6 @@ curl -sfL https://get.k3s.io | K3S_TOKEN="WayToSimple" sh -s - \
 	--disable servicelb \
 	--tls-san x.x.x.x # cube vip
 
-curl -sfL https://get.k3s.io | K3S_URL=https://k3s1:6443 K3S_TOKEN="WayToSimple" sh -s - \
+curl -sfL https://get.k3s.io | K3S_URL=https://k3s1:6443 K3S_TOKEN="WayToSimple" sh -s - server \
 	--disable traefik \
 	--disable servicelb
