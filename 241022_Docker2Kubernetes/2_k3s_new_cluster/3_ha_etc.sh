@@ -8,11 +8,13 @@ curl -sfL https://get.k3s.io | K3S_URL=https://k3s1:6443 K3S_TOKEN="WayToSimple"
 
 
 # with custom loadbalancer & ingress config
-curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" K3S_TOKEN="WayToSimple" sh -s - server \
-    --cluster-init \
-    --disable servicelb \
-    --no-deploy traefik
+curl -sfL https://get.k3s.io | K3S_TOKEN="WayToSimple" sh -s - \
+	--write-kubeconfig-mode "644" \
+	--cluster-init \
+	--disable traefik \
+	--disable servicelb \
+	--tls-san x.x.x.x # cube vip
 
-curl -sfL https://get.k3s.io | K3S_URL=https://k3s1:6443 K3S_TOKEN="WayToSimple" sh -s - server \
-    --disable servicelb \
-    --no-deploy traefik
+curl -sfL https://get.k3s.io | K3S_URL=https://k3s1:6443 K3S_TOKEN="WayToSimple" sh -s - \
+	--disable traefik \
+	--disable servicelb
