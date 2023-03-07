@@ -10,4 +10,4 @@ Edit-OSDCloudWinPE -StartOSDPad 'OSDeploy OSDPad OSDCloudTasks'
 new-osdcloudiso
 
 # Drivers
-Edit-OSDCloudWinPE
+Edit-OSDCloudWinPE -CloudDriver *
